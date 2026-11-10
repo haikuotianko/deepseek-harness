@@ -10,12 +10,13 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
+import { spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { getEnvironmentData } from 'node:worker_threads'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, onTestFinished } from 'vitest'
 import {
   installRuntimeInterception,
   ResolutionRestartRequired,
@@ -252,6 +253,59 @@ describe('runtime resolution', { concurrent: false }, () => {
     registrations.push(registration)
     expect(createRequire(join(installationOnly.profilesDir, 'entry.cjs'))('@deepseek-ai/dsh-core'))
       .toEqual({ marker: 1 })
+  })
+
+  it('falls back to the builtin addon for internals that --expose-internals does not expose', async () => {
+    const f = fixture()
+    const addon = createRequire(import.meta.url)('node-addon-require-builtin') as {
+      requireBuiltin(moduleId: string): unknown
+    }
+    const builtin = Reflect.get(addon, 'requireBuiltin')
+    const requested: string[] = []
+    addon.requireBuiltin = (moduleId) => { requested.push(moduleId); return builtin(moduleId) }
+    const nodeModule = createRequire(import.meta.url)('node:module') as {
+      _load(request: unknown, parent: unknown, isMain: boolean): unknown
+    }
+    const load = Reflect.get(nodeModule, '_load')
+    const argv = [...process.execArgv]
+    nodeModule._load = (request, parent, isMain) => {
+      if (typeof request === 'string' && request.startsWith('internal/')) throw new Error(`private internal ${request}`)
+      return load.call(nodeModule, request, parent, isMain)
+    }
+    process.execArgv.push('--expose-internals')
+    try {
+      const registration = installRuntimeInterception(await resolutionOf(f))
+      registrations.push(registration)
+      expect(requested).toEqual([
+        'internal/modules/esm/loader', 'internal/modules/cjs/loader', 'internal/modules/helpers',
+        'internal/modules/esm/utils', 'internal/modules/esm/resolve',
+      ])
+    } finally {
+      addon.requireBuiltin = builtin
+      nodeModule._load = load
+      process.execArgv.splice(0, process.execArgv.length, ...argv)
+    }
+  })
+
+  it('reads Node internals directly when --expose-internals is a launch flag', async () => {
+    const child = spawn(process.execPath, [
+      '--expose-internals',
+      '--import', 'tsx/esm',
+      fileURLToPath(new URL('./fixtures/startup-internals.ts', import.meta.url)),
+      tmpdir(),
+    ], { stdio: ['ignore', 'pipe', 'pipe'] })
+    onTestFinished(() => { if (child.exitCode === null && child.signalCode === null) child.kill() })
+    let stdout = ''
+    let stderr = ''
+    child.stdout.setEncoding('utf8').on('data', (chunk: string) => { stdout += chunk })
+    child.stderr.setEncoding('utf8').on('data', (chunk: string) => { stderr += chunk })
+    const result = await new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((resolve, reject) => {
+      child.once('error', reject)
+      child.once('close', (code, signal) => { resolve({ code, signal }) })
+    })
+    expect(result.signal, stderr).toBeNull()
+    expect(result.code, stderr).toBe(0)
+    expect(stdout).toBe('internals exposed\n')
   })
 
   it('fails resolution construction before writing when the profile manifest is malformed', async () => {
