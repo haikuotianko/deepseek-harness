@@ -1554,8 +1554,7 @@ describe('desktop main startup', () => {
     harness.prepared.resolve()
     await harness.hostStarted.promise
     harness.hosts[0]!.ready.resolve()
-    await window.shown.promise
-    expect(window.show).toHaveBeenCalledOnce()
+    await vi.waitFor(() => { expect(window.show).toHaveBeenCalledTimes(2) })
     expect(window.moveTop).toHaveBeenCalledTimes(raises ? 1 : 0)
     expect(window.focus).toHaveBeenCalledTimes(raises ? 1 : 0)
     expect(window.setAlwaysOnTop).not.toHaveBeenCalled()
@@ -2823,13 +2822,13 @@ describe('desktop main startup', () => {
     expect(signal?.aborted).toBe(true)
   })
 
-  it('prepares recovery offscreen and starts one Host before choosing the first visible window', async () => {
+  it('shows the loading page before preparing the profile and starts one Host before choosing the first visible window', async () => {
     await import('../src/main.ts')
     await harness.preparing.promise
     expect(harness.windows).toHaveLength(1)
     const window = harness.windows[0]!
     expect(window.options.show).toBe(false)
-    expect(window.show).not.toHaveBeenCalled()
+    expect(window.show).toHaveBeenCalledOnce()
     expect(window.urls).toEqual(['dsh-app://app/'])
     expect(harness.hosts).toHaveLength(0)
     const retry = invoke(DESKTOP_IPC.boot)
@@ -2855,6 +2854,17 @@ describe('desktop main startup', () => {
     expect(harness.hosts[0]!.start).toHaveBeenCalledTimes(1)
     expect(harness.windows).toHaveLength(1)
     expect(window.urls).toEqual(['dsh-app://app/'])
+  })
+
+  it('reopens a loading page the user closed instead of revealing the workspace early', async () => {
+    await import('../src/main.ts')
+    await harness.preparing.promise
+    const window = harness.windows[0]!
+    expect(window.show).toHaveBeenCalledOnce()
+    window.close()
+    expect(window.hide).toHaveBeenCalledOnce()
+    harness.app.emit('activate', {}, false)
+    expect(window.show).toHaveBeenCalledTimes(2)
   })
 
   it('prepares an independent plugin profile for the unpackaged Host', async () => {
@@ -2898,7 +2908,7 @@ describe('desktop main startup', () => {
     expect(harness.hosts).toHaveLength(1)
   })
 
-  it('keeps recovery visible when the backend fails during the welcome preference read', async () => {
+  it('keeps the loading page visible when the backend fails during the welcome preference read', async () => {
     const preferences = Promise.withResolvers<Response>()
     await import('../src/main.ts')
     await harness.preparing.promise
@@ -2917,7 +2927,7 @@ describe('desktop main startup', () => {
     expect(harness.windows[0]!.urls).not.toContain('http://127.0.0.1:3080/?token=test')
     const failureDialog = harness.dialog.showMessageBox.mock.calls[0]![0] as { detail: string }
     expect(failureDialog.detail).toContain('backend exited during startup preferences')
-    expect(harness.windows[0]!.show).not.toHaveBeenCalled()
+    expect(harness.windows[0]!.show).toHaveBeenCalledOnce()
   })
 
   it('waits for a pending child to exit on quit without late window navigation', async () => {
