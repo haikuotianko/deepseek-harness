@@ -1,4 +1,4 @@
-# Desktop startup latency on Windows: first window waits for the full Host
+# 桌面端启动慢：首窗等待完整 Host 约 6 秒，app-boot 为已暴露的内部模块多花约 0.5–0.9 秒
 
 **Summary (EN):** On Windows 11, the installed Desktop app shows its first window at 6.6–7.7 s. The shared loading page renderer starts at 0.57–0.72 s, and the Host process spawns at 0.91–1.03 s, but the window is only shown after backend readiness and the welcome/credential decision. Separately, `app-boot` reads five Node internals through `node-addon-require-builtin` even though the Desktop Host already passes `--expose-internals`; the CPU profile attributes 917 ms to `requireBuiltin`, and a direct benchmark of the resolver path is 1–2 ms with the flag vs 534–544 ms without it.
 
