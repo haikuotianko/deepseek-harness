@@ -419,6 +419,8 @@ async function main(): Promise<void> {
     if (failure?.status === 'rejected') throw failure.reason
   }
   let enteredWorkspace = false
+  /** A user close of the startup loading page suppresses the automatic workspace reveal. */
+  let startupDismissed = false
   // NSIS passes --updated when it launches the application after installation.
   let raiseAfterUpdate = process.platform === 'win32' && process.argv.includes('--updated')
   let shellInstallerOwnsQuit = false
@@ -671,6 +673,7 @@ async function main(): Promise<void> {
   const reconcileBackend = (): Promise<void> => {
     startup ??= (async () => {
       await navigateMain(applicationUrl)
+      showStartupWindow()
       await backend.start(async () => {
         await Promise.all([manager.applyRelease(), prepareHostEnvironment()])
       })
@@ -1304,7 +1307,9 @@ async function main(): Promise<void> {
       event.preventDefault()
       if (updateDialog.isOpen) { updateDialog.focus(); return }
       const hide = (): void => {
-        if (!quitting && !shellInstallerOwnsQuit && !sessionEnding && !window.isDestroyed()) hideMainWindow(window)
+        if (quitting || shellInstallerOwnsQuit || sessionEnding || window.isDestroyed()) return
+        if (!enteredWorkspace && welcomeWindow === undefined) startupDismissed = true
+        hideMainWindow(window)
       }
       if (backgroundNotice === undefined) hide()
       else backgroundNotice.close(hide)
@@ -1340,13 +1345,27 @@ async function main(): Promise<void> {
     })
     return window
   }
+  /**
+   * Show the shared loading page once its document has loaded, without waiting for the Host or
+   * the welcome/workspace decision. Rendering order inside the page keeps the workspace hidden
+   * until boot injections arrive.
+   */
+  const showStartupWindow = (): void => {
+    const window = mainWindow
+    if (startupDismissed || quitting || recovery.active || enteredWorkspace) return
+    if (window === undefined || window.isDestroyed()) return
+    window.show()
+  }
   const enterWorkspace = async ({ activate = true }: { activate?: boolean } = {}): Promise<void> => {
     if (quitting) return
     const window = mainWindow ?? createMainWindow()
     await navigateMain(applicationUrl)
     if (isQuitting() || recovery.active || window.isDestroyed()) return
-    if (activate) window.show()
-    else window.showInactive()
+    const reveal = !startupDismissed
+    startupDismissed = false
+    // A user who closed the loading page gets the workspace mounted hidden, to reopen from the tray or Dock.
+    if (reveal && activate) window.show()
+    else if (reveal) window.showInactive()
     enteredWorkspace = true
     if (welcomeWindow !== undefined) {
       welcomeWindow.close()
@@ -1365,6 +1384,8 @@ async function main(): Promise<void> {
   let openingWelcome: Promise<void> | undefined
   const showWelcome = (): Promise<void> => {
     if (quitting) return Promise.resolve()
+    // The welcome window replaces the loading page as the startup surface; a later sign-in reveals the workspace.
+    startupDismissed = false
     if (welcomeWindow !== undefined && !welcomeWindow.isDestroyed()) {
       if (!welcomeWindow.isVisible()) void track('auth_page_view', {})
       welcomeWindow.show()
@@ -1450,7 +1471,15 @@ async function main(): Promise<void> {
       return
     }
     // Startup and sign-out select the visible window before activation may reveal the workspace.
-    if (window === mainWindow && !enteredWorkspace) return
+    if (window === mainWindow && !enteredWorkspace) {
+      // Reopen a dismissed loading page instead of revealing a workspace whose Host has not finished starting.
+      if (startupDismissed) {
+        startupDismissed = false
+        window.show()
+        window.focus()
+      }
+      return
+    }
     if (window.isMinimized()) window.restore()
     window.show()
     window.focus()
