@@ -1,0 +1,3 @@
+run=1 renderer=717 hostSpawn=1034 hostListen=6432 firstWindow=7715 title=DeepSeek Harness
+run=2 renderer=579 hostSpawn=993 hostListen=5327 firstWindow=6712 title=DeepSeek Harness
+run=3 renderer=569 hostSpawn=909 hostListen=5254 firstWindow=6628 title=DeepSeek Harness

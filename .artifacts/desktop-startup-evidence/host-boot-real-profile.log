@@ -1,0 +1,18 @@
+===== run 1 =====
+    22ms  host spawned
+   292ms  IPC starting
+  3388ms  OUT dsh web: http://127.0.0.1:58151/?token=<redacted>
+  3737ms  IPC ready
+  3745ms  IPC platform-session
+  3874ms  IPC platform-session
+  4169ms  IPC shutdown-complete
+  4202ms  closed 0
+===== run 2 =====
+    13ms  host spawned
+   290ms  IPC starting
+  3419ms  OUT dsh web: http://127.0.0.1:51672/?token=<redacted>
+  3773ms  IPC ready
+  3780ms  IPC platform-session
+  3880ms  IPC platform-session
+  4153ms  IPC shutdown-complete
+  4182ms  closed 0

@@ -1,0 +1,82 @@
+total sampled: 4874ms
+
+== by package ==
+   1785ms  node-internal
+   1068ms  (native)
+    918ms  node-addon-native-custom-loader
+    312ms  @deepseek-ai/cordis
+    103ms  @deepseek-ai/dsh-app-boot
+     72ms  @deepseek-ai/cordis-plugin-loader
+     54ms  @deepseek-ai/schemastery
+     51ms  @deepseek-ai/dsh-tools
+     45ms  @modelcontextprotocol/client
+     35ms  js-yaml
+     29ms  @deepseek-ai/dsh-client-modules
+     26ms  zod
+     26ms  file:///C:/Users/lucky/.dsh/profiles/desktop/node_modules/@linxin666/dsh-client-
+     22ms  @modelcontextprotocol/core
+     20ms  @deepseek-ai/dsh-hmr
+     19ms  @deepseek-ai/dsh-settings
+     18ms  semver
+     16ms  @deepseek-ai/dsh-llm-deepseek
+     14ms  file:///C:/Users/lucky/.dsh/profiles/desktop/node_modules/@linxin666/dsh-remote-
+     13ms  yaml
+     12ms  @deepseek-ai/dsh-typert-loader
+     10ms  @deepseek-ai/cosmokit
+      9ms  @deepseek-ai/dsh-config-editor
+      7ms  @deepseek-ai/dsh-util-values
+      7ms  file:///C:/Users/lucky/.dsh/profiles/desktop/node_modules/@deepseek-ai/schemaste
+
+== by file ==
+   1068ms  (native)
+    918ms  file:///M:/deepseek/harness/resources/app.asar/dsh/node_modules/node-addon-native-custom-loader/lib/index.js
+    335ms  node:internal/modules/esm/utils
+    316ms  node:internal/child_process
+    312ms  file:///M:/deepseek/harness/resources/app.asar/dsh/node_modules/@deepseek-ai/cordis/lib/index.js
+    243ms  node:electron/js2c/node_init
+    151ms  node:path
+    109ms  node:internal/modules/cjs/loader
+    105ms  node:internal/worker/js_transferable
+    103ms  file:///M:/deepseek/harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js
+     72ms  file:///M:/deepseek/harness/resources/app.asar/dsh/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js
+     65ms  node:internal/modules/package_json_reader
+     54ms  file:///M:/deepseek/harness/resources/app.asar/dsh/node_modules/@deepseek-ai/schemastery/lib/index.mjs
+     51ms  node:internal/url
+     49ms  node:internal/crypto/hash
+     37ms  file:///M:/deepseek/harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-tools/lib/shared-DTdn5dXO.js
+     36ms  node:internal/modules/esm/loader
+     36ms  node:internal/util
+     35ms  file:///M:/deepseek/harness/resources/app.asar/dsh/node_modules/js-yaml/dist/js-yaml.mjs
+     29ms  file:///M:/deepseek/harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-client-modules/lib/index.js
+
+== by function (self) ==
+    917ms  requireBuiltin @ lib/index.js:570
+    335ms  compileSourceTextModule @ esm/utils:317
+    296ms  spawnSync @ node:internal/child_process:1144
+    180ms  (idle) @ (native):-1
+    141ms  getOrCreateArchive @ js2c/node_init:0
+    104ms  structuredClone @ worker/js_transferable:112
+    100ms  internalModuleStat @ (native):-1
+    100ms  read @ (native):-1
+     78ms  (anonymous) @ js2c/node_init:0
+     74ms  lstat @ (native):-1
+     70ms  parse @ (native):-1
+     69ms  wrapSafe @ cjs/loader:1825
+     68ms  (garbage collector) @ (native):-1
+     68ms  readFileUtf8 @ (native):-1
+     64ms  existsSync @ (native):-1
+     55ms  normalizeString @ node:path:91
+     53ms  getPackageScopeConfig @ (native):-1
+     51ms  get @ lib/index.js:1253
+     47ms  update @ crypto/hash:145
+     39ms  entries @ lib/index.js:216
+     38ms  join @ node:path:505
+     32ms  readPackageJSON @ (native):-1
+     28ms  toJSON @ lib/index.mjs:69
+     28ms  (anonymous) @ lib/index.js:0
+     27ms  (program) @ (native):-1
+     26ms  SideEffectFreeRegExpPrototypeSymbolReplace @ node:internal/util:757
+     26ms  _updateState @ lib/index.js:587
+     25ms  stat @ (native):-1
+     24ms  realpath @ (native):-1
+     24ms  fsync @ (native):-1

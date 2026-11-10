@@ -1,0 +1,13 @@
+Electron Node mode (44.7.0 / Node 24.21.0); command: DeepSeek Harness.exe [--expose-internals] --import tsx/esm bench-interception.mjs
+with-flag run 1:
+2
+with-flag run 2:
+2
+with-flag run 3:
+1
+without-flag run 1:
+534
+without-flag run 2:
+541
+without-flag run 3:
+544

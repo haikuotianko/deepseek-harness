@@ -1,0 +1,24 @@
+$ tsx scripts/dev.ts --skip-build
+desktop development: DSH_HOME=C:\Users\lucky\AppData\Local\Temp\opencode\dsh-dev-home
+desktop development: userData=C:\Users\lucky\AppData\Local\Temp\opencode\dsh-dev-user-data
+desktop development: inspectors main=9229, renderer=9222, host=9230
+
+Debugger listening on ws://127.0.0.1:9229/29bb8258-6032-46a7-a652-18ca887f28c8
+For help, see: https://nodejs.org/learn/getting-started/debugging
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/2f276769-b2e5-46fd-8d2a-390cb86dd5a8
+Error occurred in handler for 'dsh-desktop:mandatory-status': Error: No handler registered for 'dsh-desktop:mandatory-status'
+    at Session.<anonymous> (node:electron/js2c/browser_init:1:119140)
+    at Session.emit (node:events:514:28)
+[24008:1110/104954.514:INFO:CONSOLE:2] "%cElectron Security Warning (Insecure Content-Security-Policy) font-weight: bold; This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: node:electron/js2c/sandbox_bundle (2)
+dsh web: http://127.0.0.1:61955/?token=<redacted>
+desktop development: --inspect=127.0.0.1:9229 --remote-debugging-port=9222 --user-data-dir=C:\Users\lucky\AppData\Local\Temp\opencode\dsh-dev-user-data N:\test\deepseek-harness-master\apps\desktop exited with 4294967295
+[ELIFECYCLE] Command failed with exit code 1.
+

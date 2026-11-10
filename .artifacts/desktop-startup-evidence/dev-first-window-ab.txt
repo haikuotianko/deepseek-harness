@@ -1,0 +1,50 @@
+Desktop first-window A/B
+=======================
+
+Environment
+-----------
+Windows 11 build 26200, Intel Core i7-8750H (6C/12T), NTFS fixed volumes.
+Electron 44.10.2 (cached development binary), Node 24.21.0.
+Repository base: fcc0ad4 (deepseek-harness 0.2.2-rc.1).
+Profile: .desktop-build/development/home, core bundles only (no external plugins).
+
+Method
+------
+The development Electron app was launched from the repository build. The timer starts
+when the Electron main process is first observed and stops when MainWindowHandle becomes
+non-zero. Host spawn and first host listen are observed from the same process tree.
+Warm runs only; the first cold development run was excluded as a first-run welcome outlier.
+
+Patched build (show the loaded page before backend.start)
+---------------------------------------------------------
+run  patched (fresh dev home):
+  electron first seen:  615 ms
+  first window:         660 ms
+  host spawn:           815 ms
+  host listen:         2521 ms
+  title:                DSH Local Build
+
+run  patched (warm):
+  electron first seen:  402 ms
+  first window:         430 ms
+  host spawn:           558 ms
+  host listen:         1556 ms
+  title:                DSH Local Build
+
+Baseline build (only difference: showStartupWindow() call removed)
+------------------------------------------------------------------
+run  baseline (warm):
+  electron first seen:  321 ms
+  first window:        2874 ms
+  host spawn:           457 ms
+  host listen:         1365 ms
+  title:                DeepSeek Harness
+
+Result
+------
+Patched: first window appears before the Host process spawns (430 ms vs 558 ms).
+Baseline: first window waits for the Host and the welcome decision (2874 ms).
+
+This development profile is core-only, so the baseline is much faster than the installed
+app with external plugins. The mechanism is the same: the window is not shown until the
+backend and welcome decision complete.
