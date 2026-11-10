@@ -206,6 +206,8 @@ Remove-Item Env:\ELECTRON_RUN_AS_NODE
 - `https://github.com/haikuotianko/deepseek-harness/pull/1`
 - `https://github.com/haikuotianko/deepseek-harness/pull/2`
 
+完整证据（原始日志、CPU profile、复现脚本、中文报告）：[evidence branch](https://github.com/haikuotianko/deepseek-harness/tree/evidence/desktop-startup/.artifacts/desktop-startup-evidence)
+
 ## 需要说明的测量边界
 
 - 单机、热启动、连续 3 次；冷启动可能更慢。
