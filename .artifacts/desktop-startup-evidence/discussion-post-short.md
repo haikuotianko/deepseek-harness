@@ -71,4 +71,4 @@ The development profile is core-only, so its baseline is faster than the install
 
 Reference implementations (fork; upstream PRs are disabled): `https://github.com/haikuotianko/deepseek-harness/pull/1` and `https://github.com/haikuotianko/deepseek-harness/pull/2`.
 
-Full logs, raw CPU profile, scripts, and the detailed report: `desktop-startup-evidence` attachment.
+Full logs, raw CPU profile, scripts, and the detailed report: [evidence branch](https://github.com/haikuotianko/deepseek-harness/tree/evidence/desktop-startup/.artifacts/desktop-startup-evidence).
